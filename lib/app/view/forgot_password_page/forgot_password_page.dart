@@ -1,6 +1,6 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:djudjo_scheduler/generated/assets.dart';
-import 'package:djudjo_scheduler/widgets/snackbar/custom_snackbar.dart';
+import 'package:scheduler_mobx/generated/assets.dart';
+import 'package:scheduler_mobx/widgets/snackbar/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

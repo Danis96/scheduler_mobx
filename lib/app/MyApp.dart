@@ -1,4 +1,4 @@
-import 'package:djudjo_scheduler/app/repositories/navigation_repo.dart';
+import 'package:scheduler_mobx/app/repositories/navigation_repo.dart';
 import 'package:flutter/material.dart';
 
 import '../routing/route_generator.dart';

@@ -1,8 +1,8 @@
-import 'package:djudjo_scheduler/app/models/appointment_model.dart';
-import 'package:djudjo_scheduler/app/providers/appointment_provider/appointment_provider.dart';
-import 'package:djudjo_scheduler/app/utils/language/language_strings.dart';
-import 'package:djudjo_scheduler/generated/assets.dart';
-import 'package:djudjo_scheduler/widgets/dialogs/simple_dialog.dart';
+import 'package:scheduler_mobx/app/models/appointment_model.dart';
+import 'package:scheduler_mobx/app/providers/appointment_provider/appointment_provider.dart';
+import 'package:scheduler_mobx/app/utils/language/language_strings.dart';
+import 'package:scheduler_mobx/generated/assets.dart';
+import 'package:scheduler_mobx/widgets/dialogs/simple_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';

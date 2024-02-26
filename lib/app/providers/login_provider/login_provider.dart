@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:djudjo_scheduler/app/models/user_model.dart';
-import 'package:djudjo_scheduler/app/repositories/admin_firestore_repository/admin_firestore_repository.dart';
-import 'package:djudjo_scheduler/app/utils/language/language_strings.dart';
+import 'package:scheduler_mobx/app/models/user_model.dart';
+import 'package:scheduler_mobx/app/repositories/admin_firestore_repository/admin_firestore_repository.dart';
+import 'package:scheduler_mobx/app/utils/language/language_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';

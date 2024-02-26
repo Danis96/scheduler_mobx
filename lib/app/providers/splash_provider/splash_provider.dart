@@ -1,4 +1,4 @@
-import 'package:djudjo_scheduler/routing/routes.dart';
+import 'package:scheduler_mobx/routing/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../locator.dart';

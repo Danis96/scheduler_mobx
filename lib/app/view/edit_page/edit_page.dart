@@ -1,6 +1,6 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:djudjo_scheduler/app/utils/extensions/string_extensions.dart';
-import 'package:djudjo_scheduler/generated/assets.dart';
+import 'package:scheduler_mobx/app/utils/extensions/string_extensions.dart';
+import 'package:scheduler_mobx/generated/assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:group_radio_button/group_radio_button.dart';

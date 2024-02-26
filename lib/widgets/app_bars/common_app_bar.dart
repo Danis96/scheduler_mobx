@@ -1,4 +1,4 @@
-import 'package:djudjo_scheduler/theme/color_helper.dart';
+import 'package:scheduler_mobx/theme/color_helper.dart';
 import 'package:flutter/material.dart';
 
 PreferredSizeWidget commonAppBar(

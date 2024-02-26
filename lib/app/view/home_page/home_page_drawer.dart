@@ -1,4 +1,4 @@
-import 'package:djudjo_scheduler/generated/assets.dart';
+import 'package:scheduler_mobx/generated/assets.dart';
 import 'package:flutter/material.dart';
 
 import '../../../theme/color_helper.dart';
