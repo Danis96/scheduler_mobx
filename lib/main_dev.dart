@@ -3,6 +3,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:scheduler_mobx/app/utils/constants/constants.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'app/MyApp.dart';
 import 'app/locator.dart';
@@ -10,6 +11,8 @@ import 'app/utils/storage_manager/storage_prefs_manager.dart';
 import 'config/flavor_config.dart';
 
 void main() async {
+
+
   WidgetsFlutterBinding.ensureInitialized();
   await storagePrefs.init();
   await firebaseInitialize();
@@ -18,9 +21,16 @@ void main() async {
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   FlavorConfig(flavor: Flavor.DEV, values: FlavorValues(appName: AppName.APP_NAME));
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations(<DeviceOrientation>[DeviceOrientation.portraitUp]).then((_) {
+  SystemChrome.setPreferredOrientations(<DeviceOrientation>[DeviceOrientation.portraitUp]).then((_) async {
     setupLocator();
-    runApp(MyApp());
+    WidgetsFlutterBinding.ensureInitialized();
+    await SentryFlutter.init(
+          (SentryFlutterOptions options) {
+        options.dsn = SentryConstants.DSN;
+        options.tracesSampleRate = 1.0;
+      },
+      appRunner: () => runApp(MyApp()),
+    );
   }, onError: onCrash);
 }
 
@@ -41,6 +51,7 @@ void onCrash(Object exception, StackTrace stackTrace) {
   // Prints the exception and the stack trace locally
   print(exception);
   print(stackTrace);
-  // Send the strack trace to Crashlytics
+  // Send the strack trace to Crashlytics and Sentry
   FirebaseCrashlytics.instance.recordError(exception, stackTrace);
+  Sentry.captureException(exception, stackTrace: stackTrace);
 }
