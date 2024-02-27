@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:scheduler_mobx/app/models/stupidity_model.dart';
-
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 class StupidityFirestoreRepository {
   StupidityFirestoreRepository() {
@@ -26,7 +26,7 @@ class StupidityFirestoreRepository {
     final List<StupidityModel> _model = <StupidityModel>[];
     try {
       await _stupidityCollection!.get().then((QuerySnapshot<dynamic> value) {
-        for(final DocumentSnapshot<dynamic> doc in value.docs) {
+        for (final DocumentSnapshot<dynamic> doc in value.docs) {
           final StupidityModel _app = StupidityModel.fromFirestore(doc);
           _model.add(_app);
         }

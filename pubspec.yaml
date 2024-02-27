@@ -55,6 +55,7 @@ dependencies:
     mobx: ^2.3.0+1
     flutter_mobx: ^2.2.0+2
     mobx_codegen: ^2.6.0+1
+    sentry_flutter: ^7.16.1
 
 
 dependency_overrides:

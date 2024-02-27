@@ -1,5 +1,6 @@
 import 'package:scheduler_mobx/app/repositories/navigation_repo.dart';
 import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../routing/route_generator.dart';
 import '../routing/routes.dart';
@@ -10,9 +11,11 @@ import 'locator.dart';
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
+
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -28,6 +31,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   Widget buildApp() {
     return MaterialApp(
+      navigatorObservers: <NavigatorObserver>[SentryNavigatorObserver()],
       navigatorKey: locator<NavigationRepo>().navigationKey,
       title: 'Scheduler',
       builder: (BuildContext context, Widget? child) {
