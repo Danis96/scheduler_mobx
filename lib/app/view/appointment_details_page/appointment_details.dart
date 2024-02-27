@@ -1,14 +1,14 @@
-import 'package:scheduler_mobx/app/providers/appointment_provider/appointment_provider.dart';
+import 'package:flutter/material.dart';
 import 'package:scheduler_mobx/app/utils/language/language_strings.dart';
 import 'package:scheduler_mobx/app/view/appointment_details_page/appointment_image_slider.dart';
 import 'package:scheduler_mobx/app/view/appointment_details_page/appointment_info.dart';
 import 'package:scheduler_mobx/routing/routes.dart';
 import 'package:scheduler_mobx/widgets/tab_bar/tab_bar_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../theme/color_helper.dart';
 import '../../../widgets/app_bars/common_app_bar.dart';
+import '../../locator.dart';
+import '../../stores/appointment_store/appointment_store.dart';
 
 class AppointmentDetailsPage extends StatefulWidget {
   @override
@@ -16,6 +16,7 @@ class AppointmentDetailsPage extends StatefulWidget {
 }
 
 class _AppointmentDetailsPageState extends State<AppointmentDetailsPage> {
+  final AppointmentStore appointmentStore = locator<AppointmentStore>();
 
   final List<TabBarModel> _tabBarItems = <TabBarModel>[
     const TabBarModel(title: Language.ad_tab_info),
@@ -24,7 +25,8 @@ class _AppointmentDetailsPageState extends State<AppointmentDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(length: _tabBarItems.length, child: Scaffold(appBar: _buildAppBar(context), body: _buildBody(context)));
+    return DefaultTabController(
+        length: _tabBarItems.length, child: Scaffold(appBar: _buildAppBar(context), body: _buildBody(context)));
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) => commonAppBar(
@@ -41,11 +43,9 @@ class _AppointmentDetailsPageState extends State<AppointmentDetailsPage> {
             children: <Widget>[
               GestureDetector(
                 onTap: () {
-                  context.read<AppointmentProvider>().clearControllersEdit();
-                  context.read<AppointmentProvider>().setDataForEdit();
-                  Navigator.of(context)
-                      .pushNamed(EditAppointment, arguments: context.read<AppointmentProvider>())
-                      .then((Object? value) => setState(() {}));
+                  appointmentStore.clearControllersEdit();
+                  appointmentStore.setDataForEdit();
+                  Navigator.of(context).pushNamed(EditAppointment).then((Object? value) => setState(() {}));
                 },
                 child: const Icon(Icons.edit, color: Colors.black),
               ),
@@ -67,6 +67,7 @@ class _AppointmentDetailsPageState extends State<AppointmentDetailsPage> {
 
   Widget _buildBody(BuildContext context) {
     return TabBarView(
-        physics: const NeverScrollableScrollPhysics(), children: <Widget>[AppointmentInfoPage(), AppointmentImageSliderPage()]);
+        physics: const NeverScrollableScrollPhysics(),
+        children: <Widget>[AppointmentInfoPage(), AppointmentImageSliderPage()]);
   }
 }

@@ -1,13 +1,14 @@
-import 'package:scheduler_mobx/app/providers/login_provider/login_provider.dart';
-import 'package:scheduler_mobx/app/utils/helpers/settings_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:scheduler_mobx/app/locator.dart';
+import 'package:scheduler_mobx/app/stores/authentication_store/authentication_store.dart';
+import 'package:scheduler_mobx/app/stores/stupidity_store/stupidity_store.dart';
+import 'package:scheduler_mobx/app/utils/helpers/settings_helper.dart';
 
 import '../../../theme/color_helper.dart';
 import '../../../widgets/app_bars/common_app_bar.dart';
 import '../../../widgets/list_item/custom_list_item.dart';
 import '../../../widgets/switches/switch_with_title_description.dart';
-import '../../providers/stupidity_provider/stupidity_provider.dart';
 import '../../utils/language/language_strings.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -18,6 +19,9 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  final StupidityStore stupidityStore = locator<StupidityStore>();
+  final AuthenticationStore authenticationStore = locator<AuthenticationStore>();
+
   @override
   void initState() {
     _getInitialData(context);
@@ -25,7 +29,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _getInitialData(BuildContext context) async {
-    await context.read<LoginProvider>().fetchAppVersion();
+    await authenticationStore.fetchAppVersion();
   }
 
   @override
@@ -65,15 +69,16 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildStupiditySwitch(BuildContext context) {
-    return CustomSwitchWithTitleDescription(
-      onChanged: (bool value) {
-        context.read<StupidityProvider>().setStupidity();
-      },
-      showIconAndTitle: false,
-      removePadding: true,
-      switchBool: context.watch<StupidityProvider>().stupidityOn,
-      switchActiveColor: ColorHelper.black.color,
-      subTitle: 'Turn headline text on',
+    return Observer(builder: (_) => CustomSwitchWithTitleDescription(
+        onChanged: (bool value) {
+          stupidityStore.setStupidity();
+        },
+        showIconAndTitle: false,
+        removePadding: true,
+        switchBool: stupidityStore.stupidityOn,
+        switchActiveColor: ColorHelper.black.color,
+        subTitle: 'Turn headline text on',
+      ),
     );
   }
 
@@ -168,9 +173,8 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildAppVersion(BuildContext context) {
-    return Text('v.${context.watch<LoginProvider>().appVersion}');
+    return Observer(builder: (_) => Text('v.${authenticationStore.appVersion}'));
   }
-
 
   void _executeFunctionOrNavigate(List<SettingsItemModel> list, int x, BuildContext context) {
     if (list[x].route != null && list[x].route!.isNotEmpty) {

@@ -1,7 +1,7 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
-import 'package:scheduler_mobx/generated/assets.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:scheduler_mobx/generated/assets.dart';
 
 import '../../../theme/color_helper.dart';
 import '../../../widgets/app_bars/common_app_bar.dart';
@@ -10,11 +10,14 @@ import '../../../widgets/dialogs/simple_dialog.dart';
 import '../../../widgets/loaders/loader_app_dialog.dart';
 import '../../../widgets/snackbar/custom_snackbar.dart';
 import '../../../widgets/text_fields/custom_text_form_field.dart';
-import '../../providers/login_provider/login_provider.dart';
+import '../../locator.dart';
+import '../../stores/authentication_store/authentication_store.dart';
 import '../../utils/language/language_strings.dart';
 
 class ChangePasswordPage extends StatelessWidget {
-  const ChangePasswordPage({super.key});
+  ChangePasswordPage({super.key});
+
+  final AuthenticationStore authenticationStore = locator<AuthenticationStore>();
 
   @override
   Widget build(BuildContext context) {
@@ -64,79 +67,82 @@ class ChangePasswordPage extends StatelessWidget {
       ],
     );
   }
-}
 
-Widget _buildForm(BuildContext context) {
-  return Form(
-      child: Column(
-    children: <Widget>[
-      _buildOldPasswordField(context),
-      _buildNewPasswordField(context),
-      _buildConfirmNewPasswordField(context),
-    ],
-  ));
-}
+  Widget _buildForm(BuildContext context) {
+    return Form(
+        child: Column(
+      children: <Widget>[
+        _buildOldPasswordField(context),
+        _buildNewPasswordField(context),
+        _buildConfirmNewPasswordField(context),
+      ],
+    ));
+  }
 
-Widget _buildOldPasswordField(BuildContext context) {
-  return CustomTextFormField(
-    controller: context.read<LoginProvider>().cpOldController,
-    hintText: Language.cp_old_hint,
-    key: const Key('cp_pass_hint'),
-    type: TextFieldType.passwordType,
-    onFieldSubmitted: (String? s) {
-      FocusScope.of(context).nextFocus();
-    },
-  );
-}
-
-Widget _buildNewPasswordField(BuildContext context) {
-  return CustomTextFormField(
-    controller: context.read<LoginProvider>().cpNewController,
-    hintText: Language.cp_new_hint,
-    key: const Key('cp_pass_new_hint'),
-    type: TextFieldType.passwordType,
-    onFieldSubmitted: (String? s) {
-      FocusScope.of(context).nextFocus();
-    },
-  );
-}
-
-Widget _buildConfirmNewPasswordField(BuildContext context) {
-  return CustomTextFormField(
-    controller: context.read<LoginProvider>().cpConfirmController,
-    hintText: Language.cp_confirm_hint,
-    type: TextFieldType.passwordType,
-    key: const Key('cp_pass_new_confirm_hint'),
-    onFieldSubmitted: (String? s) {
-      FocusScope.of(context).nextFocus();
-    },
-  );
-}
-
-Widget _buildBottomBar(BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
-    child: CommonButton(
-      disabled: !context.watch<LoginProvider>().areChangePasswordFieldsEmpty(),
-      onPressed: () {
-        customLoaderCircleWhite(context: context);
-        context.read<LoginProvider>().reAuthenticateAdminAndChangePassword().then((String? error) {
-          Navigator.of(context).pop();
-          if (error != null) {
-            customSimpleDialog(context, title: Language.common_error, content: error, buttonText: Language.common_ok);
-          } else {
-            context.read<LoginProvider>().clearChangePasswordControllers();
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(customSnackBar(
-                snackBarTitle: Language.ana_success_title,
-                snackBarMessage: Language.cp_success_subtitle,
-                snackBarContentType: ContentType.success,
-              ));
-          }
-        });
+  Widget _buildOldPasswordField(BuildContext context) {
+    return CustomTextFormField(
+      controller: authenticationStore.cpOldController,
+      hintText: Language.cp_old_hint,
+      key: const Key('cp_pass_hint'),
+      type: TextFieldType.passwordType,
+      onFieldSubmitted: (String? s) {
+        FocusScope.of(context).nextFocus();
       },
-      buttonTitle: Language.cp_button,
-    ),
-  );
+    );
+  }
+
+  Widget _buildNewPasswordField(BuildContext context) {
+    return CustomTextFormField(
+      controller: authenticationStore.cpNewController,
+      hintText: Language.cp_new_hint,
+      key: const Key('cp_pass_new_hint'),
+      type: TextFieldType.passwordType,
+      onFieldSubmitted: (String? s) {
+        FocusScope.of(context).nextFocus();
+      },
+    );
+  }
+
+  Widget _buildConfirmNewPasswordField(BuildContext context) {
+    return CustomTextFormField(
+      controller: authenticationStore.cpConfirmController,
+      hintText: Language.cp_confirm_hint,
+      type: TextFieldType.passwordType,
+      key: const Key('cp_pass_new_confirm_hint'),
+      onFieldSubmitted: (String? s) {
+        FocusScope.of(context).nextFocus();
+      },
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+      child: Observer(
+        builder: (_) => CommonButton(
+          disabled: !authenticationStore.areChangePasswordFieldsEmpty(),
+          onPressed: () {
+            customLoaderCircleWhite(context: context);
+            authenticationStore.reAuthenticateAdminAndChangePassword().then((String? error) {
+              Navigator.of(context).pop();
+              if (error != null) {
+                customSimpleDialog(context,
+                    title: Language.common_error, content: error, buttonText: Language.common_ok);
+              } else {
+                authenticationStore.clearChangePasswordControllers();
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(customSnackBar(
+                    snackBarTitle: Language.ana_success_title,
+                    snackBarMessage: Language.cp_success_subtitle,
+                    snackBarContentType: ContentType.success,
+                  ));
+              }
+            });
+          },
+          buttonTitle: Language.cp_button,
+        ),
+      ),
+    );
+  }
 }

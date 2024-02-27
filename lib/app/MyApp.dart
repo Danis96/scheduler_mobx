@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget buildApp() {
     return MaterialApp(
       navigatorKey: locator<NavigationRepo>().navigationKey,
-      title: 'DjudjoInk',
+      title: 'Scheduler',
       builder: (BuildContext context, Widget? child) {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(data: data.copyWith(textScaleFactor: 1.0), child: child!);

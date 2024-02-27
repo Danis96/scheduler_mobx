@@ -1,8 +1,8 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:scheduler_mobx/generated/assets.dart';
 import 'package:scheduler_mobx/widgets/snackbar/custom_snackbar.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../theme/color_helper.dart';
 import '../../../widgets/app_bars/common_app_bar.dart';
@@ -10,11 +10,14 @@ import '../../../widgets/buttons/common_button.dart';
 import '../../../widgets/dialogs/simple_dialog.dart';
 import '../../../widgets/loaders/loader_app_dialog.dart';
 import '../../../widgets/text_fields/custom_text_form_field.dart';
-import '../../providers/login_provider/login_provider.dart';
+import '../../locator.dart';
+import '../../stores/authentication_store/authentication_store.dart';
 import '../../utils/language/language_strings.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
-  const ForgotPasswordPage({super.key});
+  ForgotPasswordPage({super.key});
+
+  final AuthenticationStore authenticationStore = locator<AuthenticationStore>();
 
   @override
   Widget build(BuildContext context) {
@@ -65,48 +68,51 @@ class ForgotPasswordPage extends StatelessWidget {
       ],
     );
   }
-}
 
-Widget _buildForm(BuildContext context) {
-  return Form(child: Column(children: <Widget>[_buildEmailField(context)]));
-}
+  Widget _buildForm(BuildContext context) {
+    return Form(child: Column(children: <Widget>[_buildEmailField(context)]));
+  }
 
-Widget _buildEmailField(BuildContext context) {
-  return CustomTextFormField(
-    controller: context.read<LoginProvider>().fpEmailController,
-    hintText: Language.fp_email_hint,
-    key: const Key('fp_email_hint'),
-    keyboardType: TextInputType.emailAddress,
-    onFieldSubmitted: (String? s) {
-      FocusScope.of(context).nextFocus();
-    },
-  );
-}
-
-Widget _buildBottomBar(BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
-    child: CommonButton(
-      disabled: !context.watch<LoginProvider>().isForgotEmailFieldEmpty(),
-      onPressed: () {
-        customLoaderCircleWhite(context: context);
-        context.read<LoginProvider>().forgotPasswordFirebaseAuth().then((String? error) {
-          Navigator.of(context).pop();
-          if (error != null) {
-            customSimpleDialog(context, title: Language.common_error, content: error, buttonText: Language.common_ok);
-          } else {
-            context.read<LoginProvider>().clearForgotPasswordControllers();
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(customSnackBar(
-                snackBarTitle: Language.ana_success_title,
-                snackBarMessage: Language.fp_email_sent_success,
-                snackBarContentType: ContentType.success,
-              ));
-          }
-        });
+  Widget _buildEmailField(BuildContext context) {
+    return CustomTextFormField(
+      controller: authenticationStore.fpEmailController,
+      hintText: Language.fp_email_hint,
+      key: const Key('fp_email_hint'),
+      keyboardType: TextInputType.emailAddress,
+      onFieldSubmitted: (String? s) {
+        FocusScope.of(context).nextFocus();
       },
-      buttonTitle: Language.fp_button,
-    ),
-  );
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+      child: Observer(
+        builder: (_) => CommonButton(
+          disabled: !authenticationStore.isForgotEmailFieldEmpty(),
+          onPressed: () {
+            customLoaderCircleWhite(context: context);
+            authenticationStore.forgotPasswordFirebaseAuth().then((String? error) {
+              Navigator.of(context).pop();
+              if (error != null) {
+                customSimpleDialog(context,
+                    title: Language.common_error, content: error, buttonText: Language.common_ok);
+              } else {
+                authenticationStore.clearForgotPasswordControllers();
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(customSnackBar(
+                    snackBarTitle: Language.ana_success_title,
+                    snackBarMessage: Language.fp_email_sent_success,
+                    snackBarContentType: ContentType.success,
+                  ));
+              }
+            });
+          },
+          buttonTitle: Language.fp_button,
+        ),
+      ),
+    );
+  }
 }

@@ -1,4 +1,6 @@
-import 'package:scheduler_mobx/app/providers/login_provider/login_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
+import 'package:scheduler_mobx/app/locator.dart';
 import 'package:scheduler_mobx/app/utils/language/language_strings.dart';
 import 'package:scheduler_mobx/generated/assets.dart';
 import 'package:scheduler_mobx/routing/routes.dart';
@@ -7,12 +9,10 @@ import 'package:scheduler_mobx/widgets/dialogs/simple_dialog.dart';
 import 'package:scheduler_mobx/widgets/loaders/loader_app_dialog.dart';
 import 'package:scheduler_mobx/widgets/tappable_texts/custom_tappable_text.dart';
 import 'package:scheduler_mobx/widgets/text_fields/custom_text_form_field.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
-import 'package:provider/provider.dart';
 
 import '../../../theme/color_helper.dart';
 import '../../../widgets/app_bars/common_app_bar.dart';
+import '../../stores/authentication_store/authentication_store.dart';
 import '../../utils/storage_manager/storage_prefs_manager.dart';
 
 class LoginPage extends StatefulWidget {
@@ -25,6 +25,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final AuthenticationStore authenticationStore = locator<AuthenticationStore>();
 
   @override
   void initState() {
@@ -33,8 +34,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _getInitialData(BuildContext context) async {
-    if(widget.isFromRegister) {
-      context.read<LoginProvider>().loginEmailController.text = (await storagePrefs.readEmailFromShared()) ?? '';
+    if (widget.isFromRegister) {
+      authenticationStore.loginEmailController.text = (await storagePrefs.readEmailFromShared()) ?? '';
     }
   }
 
@@ -62,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
         text: Language.reg_tappable_link,
         links: Language.reg_tappable_link,
         linkStyle: const TextStyle(decoration: TextDecoration.none, color: Colors.white, fontSize: 17),
-        onPressed: (int i) => Navigator.of(context).pushNamed(Register, arguments: context.read<LoginProvider>()),
+        onPressed: (int i) => Navigator.of(context).pushNamed(Register),
       ),
     );
   }
@@ -115,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildEmailField(BuildContext context) {
     return CustomTextFormField(
-      controller: context.read<LoginProvider>().loginEmailController,
+      controller: authenticationStore.loginEmailController,
       hintText: Language.email_hint,
       key: const Key('login_email'),
       onFieldSubmitted: (String? s) {
@@ -127,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildPasswordField(BuildContext context) {
     return CustomTextFormField(
       type: TextFieldType.passwordType,
-      controller: context.read<LoginProvider>().loginPasswordController,
+      controller: authenticationStore.loginPasswordController,
       hintText: Language.password_hint,
       key: const Key('login_pass'),
       onFieldSubmitted: (String? s) {
@@ -142,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
       links: Language.forgot_tappable_link,
       linkStyle: const TextStyle(decoration: TextDecoration.underline, fontSize: 16),
       onPressed: (int i) {
-        Navigator.of(context).pushNamed(ForgotPassword, arguments: context.read<LoginProvider>());
+        Navigator.of(context).pushNamed(ForgotPassword);
       },
     );
   }
@@ -162,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
       child: CommonButton(
         onPressed: () {
           customLoaderCircleWhite(context: context);
-          context.read<LoginProvider>().loginUser().then((String? error) {
+          authenticationStore.loginUser().then((String? error) {
             Navigator.of(context).pop();
             if (error != null) {
               customSimpleDialog(context, buttonText: Language.common_ok, title: Language.common_error, content: error);

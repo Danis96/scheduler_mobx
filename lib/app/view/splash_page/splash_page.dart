@@ -1,13 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:scheduler_mobx/app/locator.dart';
+import 'package:scheduler_mobx/app/stores/splash_store/splash_store.dart';
 
 import '../../../theme/color_helper.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends StatefulWidget {
+  @override
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  late final SplashStore? store;
+
+  @override
+  void initState() {
+    store = locator<SplashStore>();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      onPopInvoked: (bool f) async => false,
       child: Scaffold(
         body: SafeArea(
           child: Container(

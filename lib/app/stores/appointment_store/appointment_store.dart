@@ -1,17 +1,24 @@
 import 'dart:io';
-import 'package:scheduler_mobx/app/models/appointment_model.dart';
-import 'package:scheduler_mobx/app/providers/provider_utils/provider_constants.dart';
-import 'package:scheduler_mobx/app/repositories/appointment_firestore_repository/appointment_firestore_repository.dart';
-import 'package:scheduler_mobx/app/utils/extensions/string_extensions.dart';
-import 'package:scheduler_mobx/app/utils/language/language_strings.dart';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:mobx/mobx.dart';
+import 'package:scheduler_mobx/app/utils/extensions/string_extensions.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-class AppointmentProvider extends ChangeNotifier {
-  AppointmentProvider() {
+import '../../models/appointment_model.dart';
+import '../../repositories/appointment_firestore_repository/appointment_firestore_repository.dart';
+import '../../utils/language/language_strings.dart';
+import '../store_utils/store_constants.dart';
+
+part 'appointment_store.g.dart';
+
+class AppointmentStore = AppointmentBase with _$AppointmentStore;
+
+abstract class AppointmentBase with Store {
+  AppointmentBase() {
     _appointmentFirestoreRepository = AppointmentFirestoreRepository();
     isImagePicked = false;
     storageRoot = FirebaseStorage.instance.ref();
@@ -34,13 +41,21 @@ class AppointmentProvider extends ChangeNotifier {
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController imgController = TextEditingController();
 
+  @observable
   bool appointmentFinished = false;
+  @observable
   bool isFavorite = false;
+  @observable
   bool isConfirmed = false;
+  @observable
   bool allDay = false;
+  @observable
   TimeOfDay firstTime = const TimeOfDay(hour: 9, minute: 30);
+  @observable
   TimeOfDay lastTime = const TimeOfDay(hour: 23, minute: 30);
-  List<String> genders = <String>[ProviderConstants.MALE, ProviderConstants.FEMALE, ProviderConstants.OTHER];
+  @observable
+  List<String> genders = <String>[StoreConstants.MALE, StoreConstants.FEMALE, StoreConstants.OTHER];
+  @observable
   String genderValue = 'M';
 
   // edit appointment controllers and variables
@@ -58,39 +73,54 @@ class AppointmentProvider extends ChangeNotifier {
   DateRangePickerController dateRangePickerController = DateRangePickerController();
 
   // all appointments
+  @observable
   List<Appointment> _appointments = <Appointment>[];
 
+  @computed
   List<Appointment> get appointments => _appointments;
 
   // not confirmed appointments
-  final List<Appointment> _appointmentsNotConfirmed = <Appointment>[];
+  @observable
+  List<Appointment> _appointmentsNotConfirmed = <Appointment>[];
 
+  @computed
   List<Appointment> get appointmentsNotConfirmed => _appointmentsNotConfirmed;
 
   // confirmed appointments
-  final List<Appointment> _appointmentsConfirmed = <Appointment>[];
+  @observable
+  List<Appointment> _appointmentsConfirmed = <Appointment>[];
 
+  @computed
   List<Appointment> get appointmentsConfirmed => _appointmentsConfirmed;
 
   // finished appointments
-  final List<Appointment> _appointmentsFinished = <Appointment>[];
+  @observable
+  List<Appointment> _appointmentsFinished = <Appointment>[];
 
+  @computed
   List<Appointment> get appointmentsFinished => _appointmentsFinished;
 
   // favorite appointments
-  final List<Appointment> _appointmentsFavorites = <Appointment>[];
+  @observable
+  List<Appointment> _appointmentsFavorites = <Appointment>[];
 
+  @computed
   List<Appointment> get appointmentsFavorites => _appointmentsFavorites;
 
+  @observable
   Appointment _appointment = Appointment();
 
+  @computed
   Appointment get appointment => _appointment;
 
   // details model
+  @observable
   Appointment _appointmentDetails = Appointment();
 
+  @computed
   Appointment get appointmentDetails => _appointmentDetails;
 
+  @action
   void setAppointmentDetails(Appointment value) {
     _appointmentDetails = value;
     assetsForSlider.clear();
@@ -100,9 +130,9 @@ class AppointmentProvider extends ChangeNotifier {
         assetsForSlider.add(_img);
       }
     }
-    notifyListeners();
   }
 
+  @action
   void setDataForEdit() {
     eNameController.text = appointmentDetails.name ?? '';
     eDateController.text = appointmentDetails.suggestedDate ?? '';
@@ -122,29 +152,29 @@ class AppointmentProvider extends ChangeNotifier {
         hour: appointmentDetails.suggestedTime!.returnTimeRangeHours(0),
         minute: appointmentDetails.suggestedTime!.returnTimeRangeMinutes(0));
     _imageList = appointmentDetails.pictures!;
-    notifyListeners();
   }
 
+  @action
   void setIsFavorite() {
     isFavorite = !isFavorite;
-    notifyListeners();
   }
 
+  @action
   void setAllDay(bool value) {
     allDay = value;
-    notifyListeners();
   }
 
+  @action
   void setIsConfirmed() {
     isConfirmed = !isConfirmed;
-    notifyListeners();
   }
 
+  @action
   void setChosenGender(String value) {
     genderValue = value;
-    notifyListeners();
   }
 
+  @action
   Future<String?> addAppointment() async {
     if (!areMandatoryFieldsEmpty()) {
       setDataToAppointmentModel();
@@ -155,6 +185,7 @@ class AppointmentProvider extends ChangeNotifier {
     }
   }
 
+  @action
   Future<String?> updateAppointment() async {
     if (!areMandatoryFieldsEmptyEdit()) {
       setDataToAppointmentModel(isEdit: true);
@@ -166,6 +197,7 @@ class AppointmentProvider extends ChangeNotifier {
     }
   }
 
+  @action
   Future<String?> fetchAppointments() async {
     final dynamic result = await _appointmentFirestoreRepository!.fetchAppointments();
     _appointments.clear();
@@ -176,10 +208,10 @@ class AppointmentProvider extends ChangeNotifier {
     } else {
       print(result.toString());
     }
-    notifyListeners();
     return null;
   }
 
+  @action
   Future<String?> deleteAppointment(String id) async {
     try {
       await _appointmentFirestoreRepository!.deleteAppointmentFromFirestore(id);
@@ -191,13 +223,15 @@ class AppointmentProvider extends ChangeNotifier {
     }
   }
 
+  @action
   void sortAppointmentsByDate() {
     _appointments.sort(
-      (Appointment a, Appointment b) =>
+          (Appointment a, Appointment b) =>
           DateFormat('dd.MM.yyyy').parse(a.suggestedDate!).compareTo(DateFormat('dd.MM.yyyy').parse(b.suggestedDate!)),
     );
   }
 
+  @action
   void sortNotConfirmedAppointments() {
     _appointmentsNotConfirmed.clear();
     _appointmentsConfirmed.clear();
@@ -222,6 +256,7 @@ class AppointmentProvider extends ChangeNotifier {
     }
   }
 
+  @action
   void setDataToAppointmentModel({bool isEdit = false}) {
     _appointment = Appointment(
       name: isEdit ? eNameController.text : nameController.text,
@@ -243,20 +278,22 @@ class AppointmentProvider extends ChangeNotifier {
       pictures: _imageList,
       suggestedTime: isEdit
           ? allDay
-              ? ProviderConstants.ALL_DAY_TIME
-              : eTimeController.text
+          ? StoreConstants.ALL_DAY_TIME
+          : eTimeController.text
           : allDay
-              ? ProviderConstants.ALL_DAY_TIME
-              : timeController.text,
-      dateRange: isEdit ? eDateController.text + ' ' + eTimeController.text : dateController.text + ' ' + timeController.text,
+          ? StoreConstants.ALL_DAY_TIME
+          : timeController.text,
+      dateRange:
+      isEdit ? eDateController.text + ' ' + eTimeController.text : dateController.text + ' ' + timeController.text,
     );
   }
 
+  @action
   void setAppointmentFinished(bool value) {
     appointmentFinished = value;
-    notifyListeners();
   }
 
+  @action
   void setFormattedDateRange(DateRangePickerSelectionChangedArgs args) {
     if (args.value.endDate != null) {
       if (args.value.startDate as DateTime == args.value.endDate as DateTime) {
@@ -268,12 +305,12 @@ class AppointmentProvider extends ChangeNotifier {
     } else {
       dateController.text = DateFormat('dd.MM.yyyy').format(args.value.startDate as DateTime);
     }
-    if (isSelectedDateInPast()) {
+    if (isSelectedDateInPast(dateController)) {
       appointmentFinished = true;
     }
-    notifyListeners();
   }
 
+  @action
   void setFormattedDateRangeEdit(DateRangePickerSelectionChangedArgs args) {
     if (args.value.endDate != null) {
       if (args.value.startDate as DateTime == args.value.endDate as DateTime) {
@@ -285,47 +322,23 @@ class AppointmentProvider extends ChangeNotifier {
     } else {
       eDateController.text = DateFormat('dd.MM.yyyy').format(args.value.startDate as DateTime);
     }
-    if (isSelectedDateInPast()) {
+    if (isSelectedDateInPast(eDateController)) {
       appointmentFinished = true;
     }
-    notifyListeners();
   }
 
-  bool isSelectedDateInPast() {
-    final DateTime currentDate = DateTime.now();
-    String selectedFirst = '';
-    if (dateController.text.isNotEmpty) {
-      if (dateController.text.contains('-')) {
-        selectedFirst = dateController.text.split(' - ')[0];
-      } else {
-        selectedFirst = dateController.text;
-      }
-      final DateTime selectedDate = DateFormat('dd.MM.yyyy').parse(selectedFirst);
-      if (selectedDate.isBefore(currentDate)) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  }
 
-  bool isSelectedDateInPastEdit() {
+  bool isSelectedDateInPast(TextEditingController controller) {
     final DateTime currentDate = DateTime.now();
     String selectedFirst = '';
-    if (eDateController.text.isNotEmpty) {
-      if (eDateController.text.contains('-')) {
-        selectedFirst = eDateController.text.split(' - ')[0];
+    if (controller.text.isNotEmpty) {
+      if (controller.text.contains('-')) {
+        selectedFirst = controller.text.split(' - ')[0];
       } else {
-        selectedFirst = eDateController.text;
+        selectedFirst = controller.text;
       }
       final DateTime selectedDate = DateFormat('dd.MM.yyyy').parse(selectedFirst);
-      if (selectedDate.isBefore(currentDate)) {
-        return true;
-      } else {
-        return false;
-      }
+      return selectedDate.isBefore(currentDate);
     } else {
       return false;
     }
@@ -333,18 +346,19 @@ class AppointmentProvider extends ChangeNotifier {
 
   bool areMandatoryFieldsEmpty() =>
       nameController.text.isEmpty &&
-      emailController.text.isEmpty &&
-      phoneController.text.isEmpty &&
-      timeController.text.isEmpty &&
-      dateController.text.isEmpty;
+          emailController.text.isEmpty &&
+          phoneController.text.isEmpty &&
+          timeController.text.isEmpty &&
+          dateController.text.isEmpty;
 
   bool areMandatoryFieldsEmptyEdit() =>
       eNameController.text.isEmpty &&
-      eEmailController.text.isEmpty &&
-      ePhoneController.text.isEmpty &&
-      eTimeController.text.isEmpty &&
-      eDateController.text.isEmpty;
+          eEmailController.text.isEmpty &&
+          ePhoneController.text.isEmpty &&
+          eTimeController.text.isEmpty &&
+          eDateController.text.isEmpty;
 
+  @action
   void clearControllers() {
     nameController.clear();
     dateController.clear();
@@ -362,9 +376,9 @@ class AppointmentProvider extends ChangeNotifier {
     isImagePicked = false;
     _imageList.clear();
     imagePaths.clear();
-    notifyListeners();
   }
 
+  @action
   void clearControllersEdit() {
     eNameController.clear();
     eDateController.clear();
@@ -382,6 +396,7 @@ class AppointmentProvider extends ChangeNotifier {
     isImagePicked = false;
   }
 
+  @observable
   List<String> assetsForSlider = <String>[];
 
   String returnGenderImage(String gender) {
@@ -410,26 +425,33 @@ class AppointmentProvider extends ChangeNotifier {
     }
   }
 
+  @observable
   bool showUnConfirmedList = false;
 
+  @action
   void setShowUnConfirmedList() {
     showUnConfirmedList = !showUnConfirmedList;
-    notifyListeners();
   }
 
-  /// Image part - refactor and extend
+  /// Image part
 
+  @observable
   bool isImagePicked = false;
+  @observable
   List<String> imagePaths = <String>[];
+  @observable
   List<dynamic> _imageList = <dynamic>[];
-
+  @computed
   List<dynamic> get imageList => _imageList;
+  @observable
   int currentSliderIndex = 0;
 
+  @action
   void setCurrentSliderIndex(int value) {
     currentSliderIndex = 0;
   }
 
+  @action
   Future<void> pickImage(ImageSource source) async {
     imagePaths.clear();
     try {
@@ -443,9 +465,9 @@ class AppointmentProvider extends ChangeNotifier {
       isImagePicked = false;
       print('Error picking image: $e');
     }
-    notifyListeners();
   }
 
+  @action
   Future<String?> uploadImage() async {
     storageDirImages = storageRoot!.child('appointments');
     try {
@@ -466,6 +488,7 @@ class AppointmentProvider extends ChangeNotifier {
     }
   }
 
+  @action
   Future<String?> deleteImage() async {
     final String _imgUrl = assetsForSlider[currentSliderIndex];
     storageDirImages = storageRoot!.child('appointments');
@@ -474,8 +497,6 @@ class AppointmentProvider extends ChangeNotifier {
       final Reference _imgReference = storageDirImages!.storage.refFromURL(_imgUrl);
       print('IMG REF: $_imgReference');
       await _imgReference.delete();
-
-      // TODO refactor and clean code, extend new provider for iamges
 
       // Delete from Firestore Appointment
       List<String> _appImgs = <String>[];
@@ -488,13 +509,12 @@ class AppointmentProvider extends ChangeNotifier {
       _appointmentDetails.pictures!.clear();
       _appImgs.forEach((String e) => _appointmentDetails.pictures!.add(e));
 
-      await _appointmentFirestoreRepository!.deleteImagesFromFirestore(id: _appointmentDetails.id!, appointment: _appointmentDetails);
+      await _appointmentFirestoreRepository!
+          .deleteImagesFromFirestore(id: _appointmentDetails.id!, appointment: _appointmentDetails);
 
       // // Remove from the local list
       _imageList.removeWhere((dynamic image) => image.toString() == _imgUrl);
       assetsForSlider.removeWhere((String element) => element == _imgUrl);
-
-      notifyListeners();
       return null;
     } catch (error) {
       print('Error deleting image: $error');
