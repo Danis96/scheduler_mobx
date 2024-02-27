@@ -1,3 +1,4 @@
+import 'package:mobx/mobx.dart';
 import 'package:scheduler_mobx/routing/routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -5,8 +6,12 @@ import '../../locator.dart';
 import '../../repositories/navigation_repo.dart';
 import '../../utils/storage_manager/storage_prefs_manager.dart';
 
-class SplashProvider {
-  SplashProvider({this.defaultRoute = '/login'}) {
+part 'splash_store.g.dart';
+
+class SplashStore = SplashBase with _$SplashStore;
+
+abstract class SplashBase with Store {
+  SplashBase({this.defaultRoute = '/login'}) {
     onInit();
   }
 

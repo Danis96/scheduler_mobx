@@ -1,11 +1,7 @@
-import 'package:scheduler_mobx/app/providers/stupidity_provider/stupidity_provider.dart';
-import 'package:scheduler_mobx/app/utils/extensions/list_extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:scheduler_mobx/app/utils/extensions/list_extensions.dart';
 
-import '../../theme/color_helper.dart';
 import '../drawer_list_item/custom_drawer_list_item.dart';
-import '../switches/switch_with_title_description.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer(

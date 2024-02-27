@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:scheduler_mobx/app/locator.dart';
+import 'package:scheduler_mobx/app/stores/authentication_store/authentication_store.dart';
 
 import '../../../routing/routes.dart';
 import '../../../widgets/dialogs/simple_dialog.dart';
 import '../../../widgets/loaders/loader_app_dialog.dart';
-import '../../providers/login_provider/login_provider.dart';
 import '../language/language_strings.dart';
 
 void showLogoutDialog(BuildContext context) => customSimpleDialog(
@@ -27,9 +27,12 @@ void showDeleteDialog(BuildContext context) => customSimpleDialog(
       content: Language.sh_delete_subtitle,
     );
 
+
+
 Future<void> logout(BuildContext context) async {
+  final AuthenticationStore _auth = locator<AuthenticationStore>();
   customLoaderCircleWhite(context: context);
-  await context.read<LoginProvider>().logoutFromFirebase().then((String? error) {
+  await _auth.logoutFromFirebase().then((String? error) {
     Navigator.of(context).pop();
     if (error != null) {
       customSimpleDialog(context, title: Language.common_error, content: error, buttonText: Language.common_ok);
@@ -40,8 +43,9 @@ Future<void> logout(BuildContext context) async {
 }
 
 Future<void> delete(BuildContext context) async {
+  final AuthenticationStore _auth = locator<AuthenticationStore>();
   customLoaderCircleWhite(context: context);
-  await context.read<LoginProvider>().deleteUserAdmin().then((String? error) {
+  await _auth.deleteUserAdmin().then((String? error) {
     Navigator.of(context).pop();
     if (error != null) {
       customSimpleDialog(context, title: Language.common_error, content: error, buttonText: Language.common_ok);

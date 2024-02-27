@@ -1,5 +1,5 @@
-import 'package:scheduler_mobx/generated/assets.dart';
 import 'package:flutter/material.dart';
+import 'package:scheduler_mobx/generated/assets.dart';
 
 import '../../../theme/color_helper.dart';
 import '../../../widgets/drawer/custom_drawer.dart';

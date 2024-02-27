@@ -1,9 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:scheduler_mobx/app/locator.dart';
+import 'package:scheduler_mobx/app/stores/authentication_store/authentication_store.dart';
 import 'package:scheduler_mobx/generated/assets.dart';
 import 'package:scheduler_mobx/routing/routes.dart';
 import 'package:scheduler_mobx/widgets/loaders/loader_app_dialog.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
 import '../../../theme/color_helper.dart';
 import '../../../widgets/app_bars/common_app_bar.dart';
@@ -11,12 +12,12 @@ import '../../../widgets/buttons/common_button.dart';
 import '../../../widgets/dialogs/simple_dialog.dart';
 import '../../../widgets/tappable_texts/custom_tappable_text.dart';
 import '../../../widgets/text_fields/custom_text_form_field.dart';
-import '../../providers/login_provider/login_provider.dart';
 import '../../utils/helpers/stupidity_helper.dart';
 import '../../utils/language/language_strings.dart';
 
 class RegisterPage extends StatelessWidget {
-  const RegisterPage();
+  RegisterPage();
+  final AuthenticationStore authenticationStore = locator<AuthenticationStore>();
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +71,7 @@ class RegisterPage extends StatelessWidget {
 
   Widget _buildEmailField(BuildContext context) {
     return CustomTextFormField(
-      controller: context.read<LoginProvider>().registerEmailController,
+      controller: authenticationStore.registerEmailController,
       hintText: Language.email_hint,
       key: const Key('reg_email'),
       keyboardType: TextInputType.emailAddress,
@@ -82,7 +83,7 @@ class RegisterPage extends StatelessWidget {
 
   Widget _buildNameField(BuildContext context) {
     return CustomTextFormField(
-      controller: context.read<LoginProvider>().registerNameController,
+      controller: authenticationStore.registerNameController,
       hintText: Language.reg_name_hint,
       key: const Key('reg_name'),
       onFieldSubmitted: (String? s) {
@@ -93,7 +94,7 @@ class RegisterPage extends StatelessWidget {
 
   Widget _buildPhoneField(BuildContext context) {
     return CustomTextFormField(
-      controller: context.read<LoginProvider>().registerPhoneController,
+      controller: authenticationStore.registerPhoneController,
       inputFormatters: <TextInputFormatter>[StupidityHelper().maskFormatterPhone],
       hintText: Language.reg_phone_hint,
       key: const Key('reg_phone'),
@@ -107,7 +108,7 @@ class RegisterPage extends StatelessWidget {
   Widget _buildPasswordField(BuildContext context) {
     return CustomTextFormField(
       type: TextFieldType.passwordType,
-      controller: context.read<LoginProvider>().registerPasswordController,
+      controller: authenticationStore.registerPasswordController,
       hintText: Language.reg_password_hint,
       key: const Key('reg_pass'),
       onFieldSubmitted: (String? s) {
@@ -119,7 +120,7 @@ class RegisterPage extends StatelessWidget {
   Widget _buildConfirmPasswordField(BuildContext context) {
     return CustomTextFormField(
       type: TextFieldType.passwordType,
-      controller: context.read<LoginProvider>().registerConfirmPasswordController,
+      controller: authenticationStore.registerConfirmPasswordController,
       hintText: Language.reg_confirm_password_hint,
       key: const Key('reg_pass_confirm'),
       onFieldSubmitted: (String? s) {
@@ -140,10 +141,9 @@ class RegisterPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
       child: CommonButton(
-        disabled: !context.watch<LoginProvider>().areRegPasswordIdentical(),
         onPressed: () {
           customLoaderCircleWhite(context: context);
-          context.read<LoginProvider>().registerUser().then((String? error) {
+          authenticationStore.registerUser().then((String? error) {
             Navigator.of(context).pop();
             if (error != null) {
               customSimpleDialog(context, buttonText: Language.common_ok, title: Language.common_error, content: error);

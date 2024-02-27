@@ -1,16 +1,21 @@
 import 'dart:convert';
 
-import 'package:scheduler_mobx/app/models/user_model.dart';
-import 'package:scheduler_mobx/app/repositories/admin_firestore_repository/admin_firestore_repository.dart';
-import 'package:scheduler_mobx/app/utils/language/language_strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mobx/mobx.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../../models/user_model.dart';
+import '../../repositories/admin_firestore_repository/admin_firestore_repository.dart';
+import '../../utils/language/language_strings.dart';
 import '../../utils/storage_manager/storage_prefs_manager.dart';
 
-class LoginProvider extends ChangeNotifier {
-  LoginProvider() {
+part 'authentication_store.g.dart';
+
+class AuthenticationStore = AuthenticationBase with _$AuthenticationStore;
+
+abstract class AuthenticationBase with Store {
+  AuthenticationBase() {
     _adminFirestoreRepository = AdminFirestoreRepository();
     firebase = FirebaseAuth.instance;
   }
@@ -42,14 +47,18 @@ class LoginProvider extends ChangeNotifier {
   //forgot password
   final TextEditingController fpEmailController = TextEditingController();
 
-  Admin _admin = Admin();
 
+  @observable
+  Admin _admin = Admin();
+  @computed
   Admin get admin => _admin;
 
+  @observable
   List<Admin>? _admins = <Admin>[];
-
+  @computed
   List<Admin> get admins => _admins!;
 
+  @action
   Future<String?> registerUser() async {
     if (areFieldsCompletedRegister()) {
       try {
@@ -72,6 +81,7 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
+  @action
   Future<String?> loginUser() async {
     try {
       if (areFieldsCompletedLogin()) {
@@ -92,11 +102,11 @@ class LoginProvider extends ChangeNotifier {
     return null;
   }
 
+  @action
   Future<String?> fetchAdmins() async {
     try {
       _admins = await _adminFirestoreRepository!.fetchAdminsFromFirestore();
       getCurrentUser();
-      notifyListeners();
       return null;
     } catch (e) {
       print(e);
@@ -115,6 +125,7 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
+  @action
   Future<String?> reAuthenticateAdminAndChangePassword() async {
     try {
       if (areChangePasswordFieldsEmpty()) {
@@ -123,7 +134,6 @@ class LoginProvider extends ChangeNotifier {
           final AuthCredential _authCredential = EmailAuthProvider.credential(email: _user!.email!, password: cpOldController.text);
           await _user.reauthenticateWithCredential(_authCredential);
           await _user.updatePassword(cpConfirmController.text);
-          notifyListeners();
           return null;
         } else {
           return Language.confirm_pass;
@@ -139,11 +149,11 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
+  @action
   Future<String?> forgotPasswordFirebaseAuth() async {
     try {
       if (isForgotEmailFieldEmpty()) {
         await FirebaseAuth.instance.sendPasswordResetEmail(email: fpEmailController.text);
-        notifyListeners();
         return null;
       } else {
         return Language.all_fields;
@@ -156,6 +166,7 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
+  @action
   void setProfileEditChanges() {
     final User? user = FirebaseAuth.instance.currentUser;
     if (_admins != null && _admins!.isNotEmpty) {
@@ -174,6 +185,7 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
+  @action
   void getCurrentUser() {
     final User? user = FirebaseAuth.instance.currentUser;
     if (_admins != null && _admins!.isNotEmpty) {
@@ -186,7 +198,6 @@ class LoginProvider extends ChangeNotifier {
     profileEmailController.text = _admin.email ?? '';
     profileNameController.text = _admin.name ?? '';
     profilePhoneController.text = _admin.phone ?? '';
-    notifyListeners();
   }
 
   Future<void> _setLoggedUserToAdminModel(User user) async {
@@ -204,7 +215,6 @@ class LoginProvider extends ChangeNotifier {
     try {
       await firebase!.signOut();
       await storagePrefs.deleteAll();
-
       return null;
     } catch (e) {
       return e.toString();
@@ -231,18 +241,20 @@ class LoginProvider extends ChangeNotifier {
 
   bool areFieldsCompletedRegister() =>
       registerPasswordController.text.isNotEmpty &&
-      registerConfirmPasswordController.text.isNotEmpty &&
-      registerPhoneController.text.isNotEmpty &&
-      registerNameController.text.isNotEmpty &&
-      registerEmailController.text.isNotEmpty;
+          registerConfirmPasswordController.text.isNotEmpty &&
+          registerPhoneController.text.isNotEmpty &&
+          registerNameController.text.isNotEmpty &&
+          registerEmailController.text.isNotEmpty;
 
   bool areRegPasswordIdentical() =>
       registerConfirmPasswordController.text.isNotEmpty &&
-      registerPasswordController.text.isNotEmpty &&
-      registerConfirmPasswordController.text == registerPasswordController.text;
+          registerPasswordController.text.isNotEmpty &&
+          registerConfirmPasswordController.text == registerPasswordController.text;
 
+  @observable
   bool changesOccurred = false;
 
+  @action
   void setChangesOccurred() {
     if (profileNameController.text != _admin.name ||
         profilePhoneController.text != _admin.phone ||
@@ -251,15 +263,15 @@ class LoginProvider extends ChangeNotifier {
     } else {
       changesOccurred = false;
     }
-    notifyListeners();
   }
 
+  @observable
   String appVersion = '';
 
+  @action
   Future<void> fetchAppVersion() async {
     final PackageInfo packageInfo = await PackageInfo.fromPlatform();
     appVersion = packageInfo.version;
-    notifyListeners();
   }
 
   bool areChangePasswordNewConfirmMatch() => cpConfirmController.text == cpNewController.text;

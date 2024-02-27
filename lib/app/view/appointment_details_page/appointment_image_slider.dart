@@ -1,15 +1,15 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:flutter/material.dart';
 import 'package:scheduler_mobx/app/utils/language/language_strings.dart';
 import 'package:scheduler_mobx/generated/assets.dart';
 import 'package:scheduler_mobx/theme/color_helper.dart';
 import 'package:scheduler_mobx/widgets/dialogs/simple_dialog.dart';
 import 'package:scheduler_mobx/widgets/loaders/loader_app_dialog.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../widgets/image_slider/custom_image_slider.dart';
 import '../../../widgets/snackbar/custom_snackbar.dart';
-import '../../providers/appointment_provider/appointment_provider.dart';
+import '../../locator.dart';
+import '../../stores/appointment_store/appointment_store.dart';
 
 class AppointmentImageSliderPage extends StatefulWidget {
   @override
@@ -17,19 +17,21 @@ class AppointmentImageSliderPage extends StatefulWidget {
 }
 
 class _AppointmentImageSliderPageState extends State<AppointmentImageSliderPage> {
+  final AppointmentStore appointmentStore = locator<AppointmentStore>();
+
+
   @override
   Widget build(BuildContext context) {
-    return context.watch<AppointmentProvider>().assetsForSlider.isNotEmpty
+    return appointmentStore.assetsForSlider.isNotEmpty
         ? _imgSlider(context)
         : Center(child: Image.asset(Assets.assetsImgEmpty, width: 100));
   }
 
   Widget _imgSlider(BuildContext context) => CustomCarouselImageSlider(
-        imagesLink: context.watch<AppointmentProvider>().assetsForSlider,
+        imagesLink: appointmentStore.assetsForSlider,
         isAssets: false,
         onIndexChanged: (int currentIndex) {
-          print('Current Index: $currentIndex');
-          context.read<AppointmentProvider>().setCurrentSliderIndex(currentIndex);
+          appointmentStore.setCurrentSliderIndex(currentIndex);
         },
         initalPageIndex: 0,
         indicatorActiveColor: ColorHelper.black.color,
@@ -47,7 +49,7 @@ class _AppointmentImageSliderPageState extends State<AppointmentImageSliderPage>
             child: IconButton(
               onPressed: () async {
                 customLoaderCircleWhite(context: context);
-                await context.read<AppointmentProvider>().deleteImage().then((String? error) {
+                await appointmentStore.deleteImage().then((String? error) {
                   Navigator.of(context).pop();
                   if (error != null) {
                     customSimpleDialog(context, title: Language.common_error, buttonText: Language.common_ok, content: error);
