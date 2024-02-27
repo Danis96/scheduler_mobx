@@ -1,4 +1,4 @@
-package com.djudjo.scheduler
+package com.mobx.scheduler
 
 class Constants {
     companion object {

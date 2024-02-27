@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:djudjo_scheduler/app/models/appointment_model.dart';
+import 'package:scheduler_mobx/app/models/appointment_model.dart';
 
 class AppointmentFirestoreRepository {
   AppointmentFirestoreRepository() {

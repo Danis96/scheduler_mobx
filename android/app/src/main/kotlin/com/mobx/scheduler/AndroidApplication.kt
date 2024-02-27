@@ -1,4 +1,4 @@
-package com.djudjo.scheduler
+package com.mobx.scheduler
 
 import android.app.Application
 import androidx.lifecycle.LifecycleObserver
@@ -11,6 +11,6 @@ class AndroidApplication : Application(), LifecycleObserver {
     }
 
     companion object {
-        private const val STARTING_ACTIVITY = "com.djudjo.scheduler.MainActivity"
+        private const val STARTING_ACTIVITY = "com.mobx.scheduler.MainActivity"
     }
 }

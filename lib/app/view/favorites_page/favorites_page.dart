@@ -1,5 +1,5 @@
-import 'package:djudjo_scheduler/app/utils/extensions/int_extensions.dart';
-import 'package:djudjo_scheduler/app/utils/extensions/string_extensions.dart';
+import 'package:scheduler_mobx/app/utils/extensions/int_extensions.dart';
+import 'package:scheduler_mobx/app/utils/extensions/string_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';

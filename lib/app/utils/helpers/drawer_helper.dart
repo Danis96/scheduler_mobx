@@ -1,9 +1,9 @@
-import 'package:djudjo_scheduler/app/providers/appointment_provider/appointment_provider.dart';
-import 'package:djudjo_scheduler/app/providers/login_provider/login_provider.dart';
-import 'package:djudjo_scheduler/app/providers/stupidity_provider/stupidity_provider.dart';
-import 'package:djudjo_scheduler/app/utils/language/language_strings.dart';
-import 'package:djudjo_scheduler/routing/route_arguments.dart';
-import 'package:djudjo_scheduler/widgets/drawer_list_item/custom_drawer_list_item.dart';
+import 'package:scheduler_mobx/app/providers/appointment_provider/appointment_provider.dart';
+import 'package:scheduler_mobx/app/providers/login_provider/login_provider.dart';
+import 'package:scheduler_mobx/app/providers/stupidity_provider/stupidity_provider.dart';
+import 'package:scheduler_mobx/app/utils/language/language_strings.dart';
+import 'package:scheduler_mobx/routing/route_arguments.dart';
+import 'package:scheduler_mobx/widgets/drawer_list_item/custom_drawer_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../routing/routes.dart';

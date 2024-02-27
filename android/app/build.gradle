@@ -49,16 +49,16 @@ android {
 
     signingConfigs {
         sign {
-            storeFile file(keystoreProperties['DJUDJO_KEYSTORE'])
-            storePassword keystoreProperties['DJUDJO_KEYSTORE_PASSWORD']
-            keyAlias keystoreProperties['DJUDJO_ALIAS']
-            keyPassword keystoreProperties['DJUDJO_ALIAS_PASSWORD']
+            storeFile file(keystoreProperties['keystore'])
+            storePassword keystoreProperties['keyPassword']
+            keyAlias keystoreProperties['alias']
+            keyPassword keystoreProperties['storePassword']
         }
         release {
-            storeFile file(keystoreProperties["DJUDJO_KEYSTORE"])
-            storePassword keystoreProperties["DJUDJO_KEYSTORE_PASSWORD"]
-            keyAlias keystoreProperties["DJUDJO_ALIAS"]
-            keyPassword keystoreProperties["DJUDJO_ALIAS_PASSWORD"]
+            storeFile file(keystoreProperties["keystore"])
+            storePassword keystoreProperties["keyPassword"]
+            keyAlias keystoreProperties["alias"]
+            keyPassword keystoreProperties["storePassword"]
         }
     }
 
@@ -83,7 +83,7 @@ android {
         configurations.all {
             resolutionStrategy { force 'androidx.core:core-ktx:1.6.0' }
         }
-        applicationId "com.djudjo.scheduler"
+        applicationId "com.mobx.scheduler"
         minSdkVersion 24
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()

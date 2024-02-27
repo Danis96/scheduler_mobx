@@ -1,4 +1,4 @@
-package com.djudjo.scheduler
+package com.mobx.scheduler
 
 import android.content.*
 import androidx.annotation.NonNull

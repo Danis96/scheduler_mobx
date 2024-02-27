@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'package:djudjo_scheduler/app/models/appointment_model.dart';
-import 'package:djudjo_scheduler/app/providers/provider_utils/provider_constants.dart';
-import 'package:djudjo_scheduler/app/repositories/appointment_firestore_repository/appointment_firestore_repository.dart';
-import 'package:djudjo_scheduler/app/utils/extensions/string_extensions.dart';
-import 'package:djudjo_scheduler/app/utils/language/language_strings.dart';
+import 'package:scheduler_mobx/app/models/appointment_model.dart';
+import 'package:scheduler_mobx/app/providers/provider_utils/provider_constants.dart';
+import 'package:scheduler_mobx/app/repositories/appointment_firestore_repository/appointment_firestore_repository.dart';
+import 'package:scheduler_mobx/app/utils/extensions/string_extensions.dart';
+import 'package:scheduler_mobx/app/utils/language/language_strings.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

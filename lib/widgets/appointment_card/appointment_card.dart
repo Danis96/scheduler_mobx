@@ -1,5 +1,5 @@
-import 'package:djudjo_scheduler/app/utils/constants/constants.dart';
-import 'package:djudjo_scheduler/theme/color_helper.dart';
+import 'package:scheduler_mobx/app/utils/constants/constants.dart';
+import 'package:scheduler_mobx/theme/color_helper.dart';
 import 'package:flutter/material.dart';
 
 class AppointmentCard extends StatelessWidget {

@@ -1,6 +1,6 @@
-import 'package:djudjo_scheduler/app/providers/appointment_provider/appointment_provider.dart';
-import 'package:djudjo_scheduler/app/providers/login_provider/login_provider.dart';
-import 'package:djudjo_scheduler/app/providers/stupidity_provider/stupidity_provider.dart';
+import 'package:scheduler_mobx/app/providers/appointment_provider/appointment_provider.dart';
+import 'package:scheduler_mobx/app/providers/login_provider/login_provider.dart';
+import 'package:scheduler_mobx/app/providers/stupidity_provider/stupidity_provider.dart';
 
 class ProfilePageArguments {
   ProfilePageArguments(this.appointmentProvider, this.loginProvider);

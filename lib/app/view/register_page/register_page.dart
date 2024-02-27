@@ -1,6 +1,6 @@
-import 'package:djudjo_scheduler/generated/assets.dart';
-import 'package:djudjo_scheduler/routing/routes.dart';
-import 'package:djudjo_scheduler/widgets/loaders/loader_app_dialog.dart';
+import 'package:scheduler_mobx/generated/assets.dart';
+import 'package:scheduler_mobx/routing/routes.dart';
+import 'package:scheduler_mobx/widgets/loaders/loader_app_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
