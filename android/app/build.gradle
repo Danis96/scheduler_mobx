@@ -1,4 +1,10 @@
-
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
+    id "com.google.firebase.crashlytics"
+}
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
@@ -8,10 +14,9 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
+def keystorePropertiesFile = rootProject.file("key.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
@@ -23,20 +28,13 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'com.google.firebase.crashlytics'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-
-def keystorePropertiesFile = rootProject.file("key.properties")
-// Initialize a new Properties() object called keystoreProperties.
-def keystoreProperties = new Properties()
-// Load your keystore.properties file into the keystoreProperties object.
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
 android {
     compileSdkVersion 34
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -68,10 +66,6 @@ android {
             applicationIdSuffix ""
             versionNameSuffix ""
             signingConfig signingConfigs.sign
-        }
-        qa {
-            applicationIdSuffix ".qa"
-            versionNameSuffix "-qa"
         }
         prod {
             applicationIdSuffix ""
@@ -112,12 +106,10 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
     implementation 'com.android.support:multidex:1.0.3'
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation 'androidx.work:work-runtime-ktx:2.9.0'
-    implementation fileTree(dir: 'libs', include: ['*.aar'])
     implementation 'cz.msebera.android:httpclient:4.4.1.2'
     implementation 'com.loopj.android:android-async-http:1.4.9'
     implementation 'com.google.android.gms:play-services-location:21.1.0'
@@ -127,13 +119,10 @@ dependencies {
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-process:2.7.0'
     implementation 'com.facebook.android:facebook-share:[5,6)'
-    implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics:21.5.1'
     implementation "androidx.multidex:multidex:2.0.1"
     implementation "io.objectbox:objectbox-android:3.5.1"
     annotationProcessor "io.objectbox:objectbox-processor:3.5.1"
-
-
 }
 
 
